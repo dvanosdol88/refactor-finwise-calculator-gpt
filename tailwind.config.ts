@@ -89,6 +89,7 @@ export default {
       fontFamily: {
         sans: ["Source Sans 3", "var(--font-sans)"],
         heading: ["Montserrat", "sans-serif"],
+        fwheading: ["Manrope", "sans-serif"],
         mono: ["var(--font-mono)"],
       },
       keyframes: {
