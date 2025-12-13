@@ -16,6 +16,7 @@ interface CalculatorControlsProps {
   portfolioGrowth: number;
   setPortfolioGrowth: (value: number) => void;
   onReset: () => void;
+  ui?: "legacy" | "finwise";
 }
 
 interface InputFieldProps {
@@ -36,6 +37,7 @@ interface InputFieldProps {
   showSpinners?: boolean;
   onIncrement?: () => void;
   onDecrement?: () => void;
+  ui?: "legacy" | "finwise";
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -53,6 +55,7 @@ const InputField: React.FC<InputFieldProps> = ({
   showSpinners = false,
   onIncrement,
   onDecrement,
+  ui = "legacy",
   ...props
 }) => {
   let displayValue: string | number = value;
@@ -73,6 +76,9 @@ const InputField: React.FC<InputFieldProps> = ({
       {label}
     </label>
   );
+
+  const accentClass = ui === "finwise" ? "text-primary" : "text-blue-600";
+  const caretColor = ui === "finwise" ? "hsl(var(--primary))" : "#2563eb";
 
   return (
     <div className="flex flex-col items-center space-y-1">
@@ -100,10 +106,10 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={onChange}
           onBlur={onBlur}
           data-testid={`input-${label.toLowerCase().replace(/\s+/g, '-')}`}
-          className="font-heading font-bold text-2xl bg-transparent border-none outline-none p-0 text-blue-600 custom-number-input"
+          className={`font-heading font-bold text-2xl bg-transparent border-none outline-none p-0 custom-number-input ${accentClass}`}
           style={{
             width: `${inputWidth}ch`,
-            caretColor: '#2563eb'
+            caretColor,
           }}
           {...props}
         />
@@ -145,14 +151,18 @@ interface SelectFieldProps {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   children: React.ReactNode;
   tooltip?: string;
+  ui?: "legacy" | "finwise";
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, children, tooltip }) => {
+const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, children, tooltip, ui = "legacy" }) => {
   const labelContent = (
     <label className="text-sm font-medium text-muted-foreground font-heading w-full text-center">
       {label}
     </label>
   );
+
+  const accentClass = ui === "finwise" ? "text-primary" : "text-blue-600";
+  const caretColor = ui === "finwise" ? "hsl(var(--primary))" : "#2563eb";
 
   return (
     <div className="flex flex-col items-center space-y-1">
@@ -173,13 +183,13 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, child
           value={value}
           onChange={onChange}
           data-testid={`select-${label.toLowerCase().replace(/\s+/g, '-').replace(/%/g, 'percent')}`}
-          className="font-heading font-bold text-2xl bg-transparent border-none outline-none p-0 pr-6 appearance-none text-blue-600 cursor-pointer"
+          className={`font-heading font-bold text-2xl bg-transparent border-none outline-none p-0 pr-6 appearance-none cursor-pointer ${accentClass}`}
           style={{
             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234a4a4a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
             backgroundPosition: 'right 0rem center',
             backgroundRepeat: 'no-repeat',
             backgroundSize: '1.5em 1.5em',
-            caretColor: '#2563eb'
+            caretColor,
           }}
         >
           {children}
@@ -199,6 +209,7 @@ export default function CalculatorControls({
   portfolioGrowth,
   setPortfolioGrowth,
   onReset,
+  ui = "legacy",
   viewMode = 'savings',
   setViewMode,
   annualSpending = 50000,
@@ -256,6 +267,7 @@ export default function CalculatorControls({
             size={7}
             useCommas={true}
             tooltip="Maximum: $10,000,000"
+            ui={ui}
           />
 
           {/* Animated Annual Spending Input */}
@@ -281,6 +293,7 @@ export default function CalculatorControls({
                   min={0}
                   size={7}
                   useCommas={true}
+                  ui={ui}
                 />
               </div>
             </div>
@@ -290,6 +303,7 @@ export default function CalculatorControls({
             label="Annual Fee %"
             value={annualFeePercent}
             onChange={(e) => setAnnualFeePercent(Number(e.target.value))}
+            ui={ui}
           >
             {feeOptions.map(option => (
               <option key={option} value={option}>
@@ -303,6 +317,7 @@ export default function CalculatorControls({
             label="Growth"
             value={portfolioGrowth}
             onChange={(e) => setPortfolioGrowth(Number(e.target.value))}
+            ui={ui}
           >
             {growthOptions.map(option => (
               <option key={option} value={option}>
@@ -333,6 +348,7 @@ export default function CalculatorControls({
             onDecrement={() => {
               setYears(Math.max(years - 1, 1));
             }}
+            ui={ui}
           />
         </div>
         <button

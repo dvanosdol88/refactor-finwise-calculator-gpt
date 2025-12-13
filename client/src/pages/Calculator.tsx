@@ -224,6 +224,7 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="rounded-3xl bg-card border border-border shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] p-6">
                 <CalculatorControls
+                  ui="finwise"
                   portfolioValue={_.portfolioValue}
                   setPortfolioValue={_.setPortfolioValue}
                   annualFeePercent={_.annualFeePercent}
