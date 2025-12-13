@@ -1,0 +1,75 @@
+/* Fonts + Colors ONLY. No layout, spacing, radius, or sizing here. */
+:root{
+  /* Core palette */
+  --brand-primary:#006044;   /* evergreen */
+  --brand-accent:#76a923;    /* light green accent */
+  --brand-gold:#af8a49;      /* supporting accent */
+  --text:#1a1a1a;
+  --text-muted:#4a4a4a;
+  --bg:#ffffff;
+  --border:#e5e2dc;
+}
+
+/* Global typography */
+body{
+  font-family:"Source Sans 3", Arial, sans-serif;  /* body font */
+  color:var(--text);
+  background-color:var(--bg);
+}
+
+/* Headings: heavier, clean sans */
+h1,h2,h3,h4,h5,h6{
+  font-family:"Montserrat", Arial, sans-serif;     /* heading font */
+  color:var(--text);
+}
+
+/* Links */
+a{
+  color:var(--brand-primary);
+}
+a:hover, a:focus{
+  color:var(--brand-primary);                      /* color only */
+  text-decoration:underline;                       /* accessibility, not layout */
+}
+
+/* Buttons (generic elements only) */
+button,
+input[type="button"],
+input[type="submit"]{
+  color:#ffffff;
+  background-color:var(--brand-primary);
+  border-color:var(--brand-primary);
+}
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled{
+  color:#ffffff;
+  background-color:#7aa79a;                        /* desaturated primary */
+  border-color:#7aa79a;
+}
+
+/* Secondary / quiet action pattern if used */
+button.secondary,
+input.secondary[type="button"],
+input.secondary[type="submit"]{
+  color:var(--brand-primary);
+  background-color:#ffffff;
+  border-color:var(--brand-primary);
+}
+
+/* Form fields: color only */
+input, select, textarea{
+  color:var(--text);
+  background-color:#ffffff;
+  border-color:var(--border);
+  caret-color:var(--brand-primary);
+}
+input::placeholder, textarea::placeholder{
+  color:var(--text-muted);
+}
+
+/* Optional small accents by class name (safe color only) */
+.text-muted{ color:var(--text-muted); }
+.text-brand{ color:var(--brand-primary); }
+.bg-brand { background-color:var(--brand-primary); color:#fff; }
+.border-brand{ border-color:var(--brand-primary); }

@@ -1,0 +1,82 @@
+1. HTML Structure
+First, set up your component. You'll need a wrapper div to hold the input and your new custom buttons.
+
+HTML
+
+<div class="custom-number-input">
+
+  <input
+    type="text"
+    value="{inputValue}"
+    class="number-input-field"
+  />
+
+  <div class="spinner-buttons">
+    <button type="button" onClick="{handleIncrement}">
+      <span>&#9650;</span> </button>
+    <button type="button" onClick="{handleDecrement}">
+      <span>&#9660;</span> </button>
+  </div>
+
+</div>
+Note: You'll need to use JavaScript (handleIncrement, handleDecrement) and state (inputValue) to make these buttons actually change the value in the input.
+
+2. CSS to Hide the Default Spinner
+Even though we changed the type="text", if you use type="number", you need this CSS. Add this to your global CSS file to hide the default spinners on all number inputs.
+
+CSS
+
+/* Hide spinner for Chrome, Safari, Edge, and Opera */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide spinner for Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+3. CSS for the Custom Spinner (Tailwind Example)
+Now, style your new HTML structure. This example uses Tailwind CSS to align the buttons to the far right, just as you wanted.
+
+CSS
+
+/* --- Add this to your main CSS file --- */
+
+/* 1. The main wrapper */
+.custom-number-input {
+  @apply relative flex items-center w-full; /* Use flexbox for alignment */
+}
+
+/* 2. The input field */
+.number-input-field {
+  /* Make the input fill all available space */
+  @apply w-full; 
+  /* Add padding-right to prevent text from going under the buttons! */
+  @apply pr-10; /* Adjust 'pr-10' (padding-right) as needed */
+  
+  /* Add your other input styles (border, bg-color, etc.) */
+  @apply p-2 border border-gray-300 rounded-md;
+}
+
+/* 3. The container for the buttons */
+.spinner-buttons {
+  /* Position the buttons on the far right, on top of the input */
+  @apply absolute right-0 top-0 h-full; 
+  
+  /* Use flex to stack the buttons vertically */
+  @apply flex flex-col justify-center items-center;
+  
+  /* A little padding */
+  @apply px-2;
+}
+
+/* 4. The buttons themselves */
+.spinner-buttons button {
+  @apply h-1/2 flex items-center justify-center;
+  @apply text-gray-500 hover:text-black;
+  cursor: pointer;
+  font-size: 0.8rem; /* Make arrows smaller */
+}
+This approach gives you complete control over the spinner's position, size, color, and behavior, resolving all the alignment and text-cutoff issues.

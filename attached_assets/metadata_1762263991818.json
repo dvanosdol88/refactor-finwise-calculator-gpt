@@ -1,0 +1,5 @@
+{
+  "name": "Financial Fee Savings Calculator",
+  "description": "An interactive calculator to visualize potential savings on investment fees over time by comparing a percentage-based fee with a flat fee. Includes dynamic charts and user-adjustable inputs for portfolio value, fees, and growth projections.",
+  "requestFramePermissions": []
+}

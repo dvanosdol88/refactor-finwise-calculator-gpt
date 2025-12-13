@@ -1,0 +1,188 @@
+Here are two ways to approach this, designed to be given to the agent.
+
+1.  **High-Level Instructions:** This tells the agent *what* to do, allowing it to use the chart library it already has.
+2.  **Specific Code Example:** This provides a "drop-in" component (using the popular `recharts` library) that the agent can adapt or use directly.
+
+-----
+
+### 1\. 📋 Instructions for the Agent
+
+Please implement a dual-axis chart by following these steps:
+
+**1. Update Chart Data Generation**
+You must modify the data array that feeds the chart. Instead of just two portfolio values, each data point (for each year) must also include the **savings gap**.
+
+  * Create a loop that iterates from `year = 0` to the selected `years`.
+  * Inside the loop, calculate the portfolio values year-by-year (this is a "simulation" model):
+      * `portfolioCurrentFee` = `(Previous Year's Value) * (1 + annualGrowth - currentFee)`
+      * `portfolioOurFee` = `(Previous Year's Value * (1 + annualGrowth)) - 1200`
+      * `savings` = `portfolioOurFee - portfolioCurrentFee`
+  * The resulting data array should look like this:
+    ```json
+    [
+      { "year": 0, "portfolioOur": 1000000, "portfolioCurrent": 1000000, "savings": 0 },
+      { "year": 1, "portfolioOur": 1078800, "portfolioCurrent": 1070000, "savings": 8800 },
+      ...
+    ]
+    ```
+
+**2. Configure the Chart for Dual Axes**
+(This assumes a library like `recharts`. Adapt as needed.)
+
+  * **Define two Y-Axes:**
+      * **Left Y-Axis (Portfolio):** Add a `yAxisId="left"` prop to the main Y-axis. This will show the portfolio values (e.g., "$1.0M").
+      * **Right Y-Axis (Savings):** Add a *second* `<YAxis>` component with `yAxisId="right"` and `orientation="right"`. This will show the savings values (e.g., "$0" to "$60k").
+
+**3. Map Data Lines to the Correct Axis**
+
+  * **Portfolio Lines:** Ensure the `<Line>` components for `portfolioOur` and `portfolioCurrent` are mapped to the Left Y-Axis (e.g., `yAxisId="left"`).
+  * **Savings Line:** Add a **new** `<Line>` component for the `savings` dataKey. Map this line to the Right Y-Axis (e.g., `yAxisId="right"`).
+
+**4. Style and Finalize**
+
+  * Style the new "Total Savings" line to be distinct (e.g., a different color or a `strokeDasharray` for a dashed line).
+  * Update the `<Tooltip>` to display all three values.
+  * Update the `<Legend>` to include "Total Savings."
+
+-----
+
+### 2\. 💻 "Drop-In" Code Example (using `recharts`)
+
+This is a self-contained React component example. The agent may need to install `recharts` (`npm install recharts`) if it's not already in the project.
+
+This component does all the calculations internally and renders the dual-axis chart.
+
+```tsx
+// Drop this into a new file, e.g., /client/src/components/DualAxisChart.tsx
+// Agent may need to run: npm install recharts
+
+import React from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+
+// --- Helper for formatting large numbers ---
+const formatValue = (value: number) => {
+  if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `$${(value / 1000).toFixed(0)}k`;
+  return `$${value.toFixed(0)}`;
+};
+
+// --- Props interface ---
+interface DualAxisChartProps {
+  initialValue: number;
+  annualGrowth: number;
+  currentFee: number;
+  ourFee: number;
+  years: number;
+}
+
+// --- The Chart Component ---
+export const DualAxisChart: React.FC<DualAxisChartProps> = ({
+  initialValue,
+  annualGrowth,
+  currentFee,
+  ourFee,
+  years,
+}) => {
+  // --- 1. Generate the Chart Data ---
+  const data = React.useMemo(() => {
+    const chartData = [];
+    let portfolioOur = initialValue;
+    let portfolioCurrent = initialValue;
+
+    // Year 0
+    chartData.push({
+      year: 0,
+      portfolioOur,
+      portfolioCurrent,
+      savings: 0,
+    });
+
+    // Loop for subsequent years
+    for (let i = 1; i <= years; i++) {
+      portfolioOur = portfolioOur * (1 + annualGrowth) - ourFee;
+      portfolioCurrent = portfolioCurrent * (1 + (annualGrowth - currentFee));
+      
+      const savings = portfolioOur - portfolioCurrent;
+
+      chartData.push({
+        year: i,
+        portfolioOur,
+        portfolioCurrent,
+        savings,
+      });
+    }
+    return chartData;
+  }, [initialValue, annualGrowth, currentFee, ourFee, years]);
+
+  // --- 2. Render the Chart ---
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <LineChart
+        data={data}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+        <XAxis dataKey="year" label={{ value: 'Years', position: 'insideBottom', offset: -10 }} />
+
+        {/* --- 2. Left Y-Axis (Portfolio) --- */}
+        <YAxis
+          yAxisId="left"
+          tickFormatter={formatValue}
+          domain={['dataMin', 'dataMax']}
+        />
+
+        {/* --- 2. Right Y-Axis (Savings) --- */}
+        <YAxis
+          yAxisId="right"
+          orientation="right"
+          tickFormatter={formatValue}
+          domain={['dataMin', 'dataMax']}
+          stroke="#ff7300" // Style to match its line
+        />
+
+        <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+        <Legend />
+
+        {/* --- 3. Map Lines to Axes --- */}
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="portfolioOur"
+          name="Our Flat Fee"
+          stroke="#16a34a" // Green
+          strokeWidth={3}
+          dot={false}
+        />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="portfolioCurrent"
+          name="Your Current Fee"
+          stroke="#737373" // Neutral gray
+          strokeWidth={3}
+          dot={false}
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="savings"
+          name="Total Savings"
+          stroke="#ff7300" // Orange
+          strokeWidth={2}
+          strokeDasharray="5 5" // Dashed line
+          dot={false}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+};
+```
