@@ -268,7 +268,7 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
                 <TooltipProvider>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
-                      <span data-testid="text-total-savings" className="cursor-help inline-block">
+                      <span data-testid="text-total-savings" tabIndex={0} className="cursor-help inline-block">
                         {formatCurrency(_.totalSavings)}
                       </span>
                     </TooltipTrigger>
@@ -385,7 +385,13 @@ function CalculatorLegacyView({
                   </svg></span> do with <TooltipProvider>
                   <Tooltip delayDuration={0}>
                     <TooltipTrigger asChild>
-                      <span data-testid="text-total-savings" className="cursor-help inline-block">{formatCurrency(totalSavings)}</span>
+                      <span
+                        data-testid="text-total-savings"
+                        tabIndex={0}
+                        className="cursor-help inline-block"
+                      >
+                        {formatCurrency(totalSavings)}
+                      </span>
                     </TooltipTrigger>
                     <TooltipContent
                       className="max-w-md rounded-md shadow-md p-4 z-50 bg-white"

@@ -47,7 +47,7 @@ export function FlippableCard({ item }: FlippableCardProps) {
             <h3 className="text-2xl font-semibold text-gray-900 mb-4">
               {item.title}
             </h3>
-            <p className="flex-grow text-gray-600 mb-6">{item.description}</p>
+            <div className="flex-grow text-gray-600 mb-6">{item.description}</div>
 
             {/* "Learn More" button (mt-auto) will now work */}
             <button
