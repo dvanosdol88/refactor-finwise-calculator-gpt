@@ -7,6 +7,8 @@ import { Share2 } from 'lucide-react';
 import { CarouselSection } from '@/components/CarouselSection';
 import ChartCarousel from '@/components/ChartCarousel';
 import DonutChart from '@/components/DonutChart';
+import Container from "@/components/layout/Container";
+import Section from "@/components/layout/Section";
 import {
   Tooltip,
   TooltipContent,
@@ -159,13 +161,155 @@ export default function Calculator() {
 }
 
 function CalculatorFinwiseView(_: CalculatorViewProps) {
+  const share = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Financial Fee Savings Calculator",
+          text: "Check out this calculator to see how much you could save!",
+          url: window.location.href,
+        })
+        .catch(() => {});
+      return;
+    }
+
+    navigator.clipboard.writeText(window.location.href);
+  };
+
   return (
-    <div data-ui="finwise" className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
-          Finwise UI preview (ui=finwise)
-        </div>
+    <div data-ui="finwise" className="min-h-screen bg-background text-foreground">
+      {/* Developer-only banner (temporary) */}
+      <div className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
+        <Container className="py-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
+            Finwise UI preview (ui=finwise)
+          </div>
+        </Container>
       </div>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden pt-16 md:pt-24 pb-10">
+        <div className="absolute inset-0 -z-10 fw-hero-grid" />
+        <div className="absolute inset-x-0 bottom-0 h-40 -z-10 fw-hero-bottom-blur" />
+
+        <Container>
+          <div className="grid gap-10">
+            <div className="grid gap-4">
+              <h1 className="font-fwheading font-extrabold tracking-tight text-3xl sm:text-4xl lg:text-5xl text-primary">
+                You pay too much for advice.
+              </h1>
+              <p className="max-w-2xl text-base sm:text-lg text-muted-foreground">
+                Compare your current asset-based fee to a flat annual fee and see how much you could keep invested.
+              </p>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="max-w-[420px]">
+                  <SurveySection />
+                </div>
+                <button
+                  data-testid="button-share"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white/70 px-4 py-2 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-white"
+                  onClick={share}
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Surface grid */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-3xl bg-card border border-border shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] p-6">
+                <CalculatorControls
+                  portfolioValue={_.portfolioValue}
+                  setPortfolioValue={_.setPortfolioValue}
+                  annualFeePercent={_.annualFeePercent}
+                  setAnnualFeePercent={_.setAnnualFeePercent}
+                  years={_.years}
+                  setYears={_.setYears}
+                  portfolioGrowth={_.portfolioGrowth}
+                  setPortfolioGrowth={_.setPortfolioGrowth}
+                  onReset={_.handleReset}
+                />
+              </div>
+
+              <div
+                data-testid="chart-container"
+                className="rounded-3xl bg-card border border-border shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] p-6 h-[420px] sm:h-[520px]"
+              >
+                <ChartCarousel>
+                  <SavingsChart
+                    data={_.chartData}
+                    firstYearSavings={_.firstYearSavings}
+                    totalSavings={_.totalSavings}
+                    years={_.years}
+                    portfolioValue={_.portfolioValue}
+                    viewMode={_.viewMode}
+                    annualFeePercent={_.annualFeePercent}
+                  />
+                  <DonutChart
+                    portfolioValue={_.portfolioValue}
+                    annualFeePercent={_.annualFeePercent}
+                    portfolioGrowth={_.portfolioGrowth}
+                    years={_.years}
+                  />
+                </ChartCarousel>
+              </div>
+            </div>
+
+            {/* Finwise-style savings callout (keeps existing testid) */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Total savings over {_.years} years</p>
+              <p className="mt-1 text-4xl font-fwheading font-extrabold text-primary">
+                <TooltipProvider>
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <span data-testid="text-total-savings" className="cursor-help inline-block">
+                        {formatCurrency(_.totalSavings)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-md rounded-md shadow-md p-4 z-50 bg-white" sideOffset={5}>
+                      <div className="text-sm space-y-3">
+                        <div>
+                          <p className="font-semibold text-foreground mb-1">Total Savings Calculation</p>
+                          <p className="text-xs text-muted-foreground">
+                            This amount represents the difference in your total portfolio value after {_.years} years,
+                            comparing your current asset-based fee to our flat monthly fee.
+                          </p>
+                        </div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Supporting section */}
+      <Section id="features" alt>
+        <CarouselSection
+          portfolioValue={_.portfolioValue}
+          annualFeePercent={_.annualFeePercent}
+          portfolioGrowth={_.portfolioGrowth}
+          years={_.years}
+        />
+      </Section>
+
+      {/* Footer */}
+      <footer className="py-12">
+        <Container>
+          <div className="text-center text-muted-foreground text-sm space-y-1">
+            <p>Calculations are for illustrative purposes only and do not constitute financial advice.</p>
+            <p>Portfolio growth is not guaranteed. Flat fee is assumed to be $100/month ($1,200/year).</p>
+            <p>
+              Cumulative savings amount assumes that the annual savings remain invested in the same portfolio and
+              compound at that growth rate.
+            </p>
+          </div>
+        </Container>
+      </footer>
     </div>
   );
 }
