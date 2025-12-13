@@ -9,6 +9,8 @@ import ChartCarousel from '@/components/ChartCarousel';
 import DonutChart from '@/components/DonutChart';
 import Container from "@/components/layout/Container";
 import Section from "@/components/layout/Section";
+import SectionReveal from "@/components/motion/SectionReveal";
+import { MotionConfig } from "framer-motion";
 import {
   Tooltip,
   TooltipContent,
@@ -177,7 +179,8 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
   };
 
   return (
-    <div data-ui="finwise" className="min-h-screen bg-background text-foreground">
+    <MotionConfig reducedMotion="user">
+      <div data-ui="finwise" className="min-h-screen bg-background text-foreground">
       {/* Developer-only banner (temporary) */}
       <div className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
         <Container className="py-2">
@@ -193,7 +196,7 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
         <div className="absolute inset-x-0 bottom-0 h-40 -z-10 fw-hero-bottom-blur" />
 
         <Container>
-          <div className="grid gap-10">
+          <SectionReveal className="grid gap-10">
             <div className="grid gap-4">
               <h1 className="font-fwheading font-extrabold tracking-tight text-3xl sm:text-4xl lg:text-5xl text-primary">
                 You pay too much for advice.
@@ -283,18 +286,20 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
                 </TooltipProvider>
               </p>
             </div>
-          </div>
+          </SectionReveal>
         </Container>
       </section>
 
       {/* Supporting section */}
       <Section id="features" alt>
-        <CarouselSection
-          portfolioValue={_.portfolioValue}
-          annualFeePercent={_.annualFeePercent}
-          portfolioGrowth={_.portfolioGrowth}
-          years={_.years}
-        />
+        <SectionReveal>
+          <CarouselSection
+            portfolioValue={_.portfolioValue}
+            annualFeePercent={_.annualFeePercent}
+            portfolioGrowth={_.portfolioGrowth}
+            years={_.years}
+          />
+        </SectionReveal>
       </Section>
 
       {/* Footer */}
@@ -310,7 +315,8 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
           </div>
         </Container>
       </footer>
-    </div>
+      </div>
+    </MotionConfig>
   );
 }
 
