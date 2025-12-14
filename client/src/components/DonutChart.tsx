@@ -133,8 +133,8 @@ export default function DonutChart({
                 fill={
                   ui === "finwise"
                     ? entry.name === "Lost to Fees"
-                      ? "hsl(var(--destructive))"
-                      : "hsl(var(--primary))"
+                      ? "#ef4444"
+                      : "#006044"
                     : entry.color
                 }
               />

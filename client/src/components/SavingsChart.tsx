@@ -2,6 +2,13 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useState, useEffect } from 'react';
 import type { ChartDataPoint } from '@shared/schema';
 
+// NOTE: SVG presentation attributes are inconsistent across browsers when using CSS variables (e.g. var(--x)).
+// For Finwise mode, we use explicit color strings for any values passed into SVG attributes (stroke/fill/stopColor).
+const FINWISE_CHART_CURRENT = "#304fff";
+const FINWISE_CHART_FLAT = "#006044";
+const FINWISE_CHART_SAVINGS = "#006044";
+const FINWISE_DESTRUCTIVE = "#ef4444";
+
 interface SavingsChartProps {
   data: ChartDataPoint[];
   firstYearSavings: number;
@@ -358,9 +365,9 @@ export default function SavingsChart({
         >
           <defs>
             <linearGradient id="savingsGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#76a923"} stopOpacity={0.3} />
-              <stop offset="50%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#017a3d"} stopOpacity={0.55} />
-              <stop offset="100%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#006044"} stopOpacity={0.8} />
+              <stop offset="0%" stopColor={ui === "finwise" ? FINWISE_CHART_SAVINGS : "#76a923"} stopOpacity={0.3} />
+              <stop offset="50%" stopColor={ui === "finwise" ? FINWISE_CHART_SAVINGS : "#017a3d"} stopOpacity={0.55} />
+              <stop offset="100%" stopColor={ui === "finwise" ? FINWISE_CHART_SAVINGS : "#006044"} stopOpacity={0.8} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -409,17 +416,17 @@ export default function SavingsChart({
           <Area
             type="monotone"
             dataKey="percentFeePortfolio"
-            stroke={ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb"}
+            stroke={ui === "finwise" ? FINWISE_CHART_CURRENT : "#2563eb"}
             strokeWidth={3}
-            fill={ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb"}
+            fill={ui === "finwise" ? FINWISE_CHART_CURRENT : "#2563eb"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 0}
             stackId={viewMode === 'spending' ? "portfolio" : "savings"}
             name={viewMode === 'spending' ? `Portfolio Value with ${annualFeePercent.toFixed(2)}% fee` : `Current Portfolio @ ${annualFeePercent.toFixed(2)}% Fee`}
             dot={false}
             activeDot={{
               r: 6,
-              fill: ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb",
-              stroke: ui === "finwise" ? "hsl(var(--background))" : "#ffffff",
+              fill: ui === "finwise" ? FINWISE_CHART_CURRENT : "#2563eb",
+              stroke: "#ffffff",
               strokeWidth: 2,
             }}
             animationDuration={1000}
@@ -430,7 +437,7 @@ export default function SavingsChart({
             type="monotone"
             dataKey="savings"
             stroke="none"
-            fill={viewMode === 'spending' ? "hsl(var(--destructive))" : "url(#savingsGradient)"}
+            fill={viewMode === 'spending' ? (ui === "finwise" ? FINWISE_DESTRUCTIVE : "hsl(var(--destructive))") : "url(#savingsGradient)"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 1}
             stackId={viewMode === 'spending' ? "portfolio" : "savings"}
             name={viewMode === 'spending' ? "Difference" : "Savings"}
@@ -446,17 +453,17 @@ export default function SavingsChart({
           <Area
             type="monotone"
             dataKey="flatFeePortfolio"
-            stroke={ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923"}
+            stroke={ui === "finwise" ? FINWISE_CHART_FLAT : "#76a923"}
             strokeWidth={3}
-            fill={ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923"}
+            fill={ui === "finwise" ? FINWISE_CHART_FLAT : "#76a923"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 0}
             stackId={viewMode === 'spending' ? undefined : undefined}
             name={viewMode === 'spending' ? "Portfolio Value with Flat $1,200 fee" : "Portfolio @ $1,200 Annual Flat Fee"}
             dot={false}
             activeDot={{
               r: viewMode === "spending" ? 6 : 8,
-              fill: ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923",
-              stroke: ui === "finwise" ? "hsl(var(--background))" : "#ffffff",
+              fill: ui === "finwise" ? FINWISE_CHART_FLAT : "#76a923",
+              stroke: "#ffffff",
               strokeWidth: 2,
             }}
             animationDuration={1000}

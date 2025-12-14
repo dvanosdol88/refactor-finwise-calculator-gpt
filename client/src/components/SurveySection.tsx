@@ -131,7 +131,7 @@ export default function SurveySection({ ui = "legacy" }: SurveySectionProps) {
               <div className="flex flex-col text-[13px]" style={{ gap: '1.87px' }}>
                 {surveyOptions.map(option => {
                   const votes = surveyResults[option.id] || 0;
-                  const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(0) : 0;
+                  const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(0) : "0";
                   const isSelected = selectedOption === option.id;
                   
                   return (
