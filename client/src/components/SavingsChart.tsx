@@ -10,6 +10,7 @@ interface SavingsChartProps {
   portfolioValue: number;
   viewMode?: 'savings' | 'spending';
   annualFeePercent?: number;
+  ui?: "legacy" | "finwise";
 }
 
 const useMediaQuery = (query: string): boolean => {
@@ -126,7 +127,7 @@ const CustomChartOverlay: React.FC<CustomChartOverlayProps> = ({
   );
 };
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<any> = ({ active, payload, label, ui = "legacy" }: { active?: boolean; payload?: any; label?: any; ui?: "legacy" | "finwise" }) => {
   if (active && payload && payload.length) {
     // Check if we are in Spend Mode (look for specific data keys)
     const isSpendMode = payload.some((p: any) => p.dataKey === 'percentFeePortfolio' || p.dataKey === 'flatFeePortfolio');
@@ -137,18 +138,30 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
       const difference = flatFeeValue - currentAdvisorValue;
 
       return (
-        <div className="bg-background/95 backdrop-blur-sm p-3 border border-border rounded-lg shadow-md">
+        <div
+          className={
+            ui === "finwise"
+              ? "bg-popover/95 backdrop-blur-sm p-3 border border-border rounded-lg shadow-md"
+              : "bg-background/95 backdrop-blur-sm p-3 border border-border rounded-lg shadow-md"
+          }
+        >
           <p className="label text-muted-foreground font-heading text-sm mb-2">
             {`Year ${label}`}
           </p>
           <div className="space-y-1">
-            <p className="text-[#2563eb] font-semibold font-heading text-sm">
+            <p
+              className="font-semibold font-heading text-sm"
+              style={{ color: ui === "finwise" ? "var(--fw-chart-current, #2563eb)" : "#2563eb" }}
+            >
               {`Current Advisor: ${formatFullCurrency(currentAdvisorValue)}`}
             </p>
-            <p className="text-[#76a923] font-semibold font-heading text-sm">
+            <p
+              className="font-semibold font-heading text-sm"
+              style={{ color: ui === "finwise" ? "var(--fw-chart-flat, #76a923)" : "#76a923" }}
+            >
               {`Flat Fee: ${formatFullCurrency(flatFeeValue)}`}
             </p>
-            <p className="text-red-500 font-semibold font-heading text-sm">
+            <p className={ui === "finwise" ? "text-destructive font-semibold font-heading text-sm" : "text-red-500 font-semibold font-heading text-sm"}>
               {`Difference: ${formatFullCurrency(difference)}`}
             </p>
           </div>
@@ -162,18 +175,37 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
     const savings = flatFeeValue - currentAdvisorValue;
 
     return (
-      <div className="bg-transparent dark:bg-transparent backdrop-blur-sm p-3 border border-popover-border rounded-lg shadow-md">
+      <div
+        className={
+          ui === "finwise"
+            ? "bg-popover/95 backdrop-blur-sm p-3 border border-border rounded-lg shadow-md"
+            : "bg-transparent dark:bg-transparent backdrop-blur-sm p-3 border border-popover-border rounded-lg shadow-md"
+        }
+      >
         <p className="label text-muted-foreground font-heading text-sm mb-2">
           {`Year ${label}`}
         </p>
         <div className="space-y-1">
-          <p className="text-[#2563eb] font-semibold font-heading text-sm">
+          <p
+            className={ui === "finwise" ? "font-semibold font-heading text-sm" : "text-[#2563eb] font-semibold font-heading text-sm"}
+            style={ui === "finwise" ? { color: "var(--fw-chart-current, #2563eb)" } : undefined}
+          >
             {`Current Advisor: ${formatFullCurrency(currentAdvisorValue)}`}
           </p>
-          <p className="text-[#76a923] font-semibold font-heading text-sm">
+          <p
+            className={ui === "finwise" ? "font-semibold font-heading text-sm" : "text-[#76a923] font-semibold font-heading text-sm"}
+            style={ui === "finwise" ? { color: "var(--fw-chart-flat, #76a923)" } : undefined}
+          >
             {`Flat Fee: ${formatFullCurrency(flatFeeValue)}`}
           </p>
-          <p className="text-[#76a923] font-semibold font-heading text-sm border-t border-border pt-1 mt-1">
+          <p
+            className={
+              ui === "finwise"
+                ? "font-semibold font-heading text-sm border-t border-border pt-1 mt-1"
+                : "text-[#76a923] font-semibold font-heading text-sm border-t border-border pt-1 mt-1"
+            }
+            style={ui === "finwise" ? { color: "var(--fw-chart-savings, #76a923)" } : undefined}
+          >
             {`Savings: ${formatFullCurrency(savings)}`}
           </p>
         </div>
@@ -224,7 +256,8 @@ export default function SavingsChart({
   years,
   portfolioValue,
   viewMode = 'savings',
-  annualFeePercent = 1.0
+  annualFeePercent = 1.0,
+  ui = "legacy",
 }: SavingsChartProps) {
   // Detect screen size for responsive chart configuration
   const isTablet = useMediaQuery('(min-width: 768px)');
@@ -325,9 +358,9 @@ export default function SavingsChart({
         >
           <defs>
             <linearGradient id="savingsGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#76a923" stopOpacity={0.3} />
-              <stop offset="50%" stopColor="#017a3d" stopOpacity={0.55} />
-              <stop offset="100%" stopColor="#006044" stopOpacity={0.8} />
+              <stop offset="0%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#76a923"} stopOpacity={0.3} />
+              <stop offset="50%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#017a3d"} stopOpacity={0.55} />
+              <stop offset="100%" stopColor={ui === "finwise" ? "var(--fw-chart-savings)" : "#006044"} stopOpacity={0.8} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -358,7 +391,7 @@ export default function SavingsChart({
             axisLine={{ stroke: 'hsl(var(--border))' }}
             tickLine={{ stroke: 'hsl(var(--border))' }}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip ui={ui} />} />
           <Legend content={<CustomLegend />} />
 
           {/* Highlight Zero Line in Spending Mode */}
@@ -376,14 +409,19 @@ export default function SavingsChart({
           <Area
             type="monotone"
             dataKey="percentFeePortfolio"
-            stroke="#2563eb"
+            stroke={ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb"}
             strokeWidth={3}
-            fill="#2563eb"
+            fill={ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 0}
             stackId={viewMode === 'spending' ? "portfolio" : "savings"}
             name={viewMode === 'spending' ? `Portfolio Value with ${annualFeePercent.toFixed(2)}% fee` : `Current Portfolio @ ${annualFeePercent.toFixed(2)}% Fee`}
             dot={false}
-            activeDot={{ r: 6, fill: '#2563eb', stroke: '#ffffff', strokeWidth: 2 }}
+            activeDot={{
+              r: 6,
+              fill: ui === "finwise" ? "var(--fw-chart-current)" : "#2563eb",
+              stroke: ui === "finwise" ? "hsl(var(--background))" : "#ffffff",
+              strokeWidth: 2,
+            }}
             animationDuration={1000}
           />
 
@@ -392,7 +430,7 @@ export default function SavingsChart({
             type="monotone"
             dataKey="savings"
             stroke="none"
-            fill={viewMode === 'spending' ? "#ef4444" : "url(#savingsGradient)"}
+            fill={viewMode === 'spending' ? "hsl(var(--destructive))" : "url(#savingsGradient)"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 1}
             stackId={viewMode === 'spending' ? "portfolio" : "savings"}
             name={viewMode === 'spending' ? "Difference" : "Savings"}
@@ -408,14 +446,19 @@ export default function SavingsChart({
           <Area
             type="monotone"
             dataKey="flatFeePortfolio"
-            stroke="#76a923"
+            stroke={ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923"}
             strokeWidth={3}
-            fill="#76a923"
+            fill={ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923"}
             fillOpacity={viewMode === 'spending' ? 0.1 : 0}
             stackId={viewMode === 'spending' ? undefined : undefined}
             name={viewMode === 'spending' ? "Portfolio Value with Flat $1,200 fee" : "Portfolio @ $1,200 Annual Flat Fee"}
             dot={false}
-            activeDot={{ r: viewMode === 'spending' ? 6 : 8, fill: '#76a923', stroke: '#ffffff', strokeWidth: 2 }}
+            activeDot={{
+              r: viewMode === "spending" ? 6 : 8,
+              fill: ui === "finwise" ? "var(--fw-chart-flat)" : "#76a923",
+              stroke: ui === "finwise" ? "hsl(var(--background))" : "#ffffff",
+              strokeWidth: 2,
+            }}
             animationDuration={1000}
           />
 

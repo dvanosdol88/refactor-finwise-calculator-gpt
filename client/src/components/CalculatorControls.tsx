@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import FinwiseField from "@/components/finwise/FinwiseField";
 
 interface CalculatorControlsProps {
   portfolioValue: number;
@@ -94,7 +95,7 @@ const InputField: React.FC<InputFieldProps> = ({
           </Tooltip>
         </TooltipProvider>
       ) : labelContent}
-      <div className="relative inline-flex items-center bg-transparent border border-card-border rounded-md shadow-none py-2 px-3 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all hover-elevate">
+      <FinwiseField ui={ui}>
         {prefix && (
           <span className="text-muted-foreground mr-2 font-heading font-bold text-2xl">
             {prefix}
@@ -140,7 +141,7 @@ const InputField: React.FC<InputFieldProps> = ({
             </button>
           </div>
         )}
-      </div>
+      </FinwiseField>
     </div>
   );
 };
@@ -178,7 +179,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, child
           </Tooltip>
         </TooltipProvider>
       ) : labelContent}
-      <div className="inline-flex items-center bg-transparent border border-card-border rounded-md shadow-none py-2 pr-2 pl-3 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all hover-elevate">
+      <FinwiseField ui={ui} className="pr-2 pl-4">
         <select
           value={value}
           onChange={onChange}
@@ -194,7 +195,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, value, onChange, child
         >
           {children}
         </select>
-      </div>
+      </FinwiseField>
     </div>
   );
 };
@@ -238,7 +239,11 @@ export default function CalculatorControls({
         <div className="bg-muted/30 p-1 rounded-full inline-flex items-center border border-border/50 pt-[0px] pb-[0px] pl-[0px] pr-[0px] text-[15px]">
           <button
             onClick={() => setViewMode('savings')}
-            className="px-5 py-1.5 rounded-full font-bold transition-all duration-200 bg-green-600 text-white shadow-md pl-[10px] pr-[10px] pt-[4px] pb-[4px] text-[13px]"
+            className={
+              ui === "finwise"
+                ? "px-5 py-1.5 rounded-full font-bold transition-all duration-200 bg-primary text-primary-foreground shadow-sm pl-[10px] pr-[10px] pt-[4px] pb-[4px] text-[13px]"
+                : "px-5 py-1.5 rounded-full font-bold transition-all duration-200 bg-green-600 text-white shadow-md pl-[10px] pr-[10px] pt-[4px] pb-[4px] text-[13px]"
+            }
           >
             GROW
           </button>

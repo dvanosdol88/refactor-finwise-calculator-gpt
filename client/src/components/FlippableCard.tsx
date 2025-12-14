@@ -14,9 +14,10 @@ interface CarouselItem {
 
 interface FlippableCardProps {
   item: CarouselItem;
+  ui?: "legacy" | "finwise";
 }
 
-export function FlippableCard({ item }: FlippableCardProps) {
+export function FlippableCard({ item, ui = "legacy" }: FlippableCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   // This wrapper div provides the 3D perspective
@@ -24,13 +25,21 @@ export function FlippableCard({ item }: FlippableCardProps) {
     <div className="[perspective:1000px] h-full">
       {/* This inner div is what actually flips. Shadow is set to shadow-2xl */}
       <div
-        className={`relative h-full w-full rounded-xl shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''
+        className={`relative h-full w-full ${
+          ui === "finwise" ? "rounded-3xl" : "rounded-xl"
+        } shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''
           }`}
       >
         {/* --- FRONT OF THE CARD --- */}
         <div className="absolute inset-0 [backface-visibility:hidden]">
           {/* Padding is set to py-8 px-12 */}
-          <div className="flex h-full flex-col rounded-xl bg-white py-8 px-12 text-center pt-[8px] pb-[8px]">
+          <div
+            className={
+              ui === "finwise"
+                ? "flex h-full flex-col rounded-3xl bg-card border border-border py-8 px-10 text-center pt-[8px] pb-[8px]"
+                : "flex h-full flex-col rounded-xl bg-white py-8 px-12 text-center pt-[8px] pb-[8px]"
+            }
+          >
             {item.customContent ? (
               <div className="mb-4 flex justify-center w-full">
                 {item.customContent}
@@ -44,10 +53,18 @@ export function FlippableCard({ item }: FlippableCardProps) {
                 />
               </div>
             ) : null}
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <h3
+              className={
+                ui === "finwise"
+                  ? "text-2xl font-extrabold font-fwheading text-foreground mb-4"
+                  : "text-2xl font-semibold text-gray-900 mb-4"
+              }
+            >
               {item.title}
             </h3>
-            <div className="flex-grow text-gray-600 mb-6">{item.description}</div>
+            <div className={ui === "finwise" ? "flex-grow text-muted-foreground mb-6" : "flex-grow text-gray-600 mb-6"}>
+              {item.description}
+            </div>
 
             {/* "Learn More" button (mt-auto) will now work */}
             <button
@@ -62,11 +79,17 @@ export function FlippableCard({ item }: FlippableCardProps) {
         {/* --- BACK OF THE CARD --- */}
         <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
           {/* Padding is set to py-8 px-12 */}
-          <div className="flex h-full flex-col rounded-xl bg-gray-100 py-8 px-12 text-center">
-            <h4 className="text-xl font-semibold text-gray-900 mb-4">
+          <div
+            className={
+              ui === "finwise"
+                ? "flex h-full flex-col rounded-3xl bg-muted/30 border border-border py-8 px-10 text-center"
+                : "flex h-full flex-col rounded-xl bg-gray-100 py-8 px-12 text-center"
+            }
+          >
+            <h4 className={ui === "finwise" ? "text-xl font-extrabold font-fwheading text-foreground mb-4" : "text-xl font-semibold text-gray-900 mb-4"}>
               More about {item.title}
             </h4>
-            <p className="flex-grow text-gray-600 mb-6">
+            <p className={ui === "finwise" ? "flex-grow text-muted-foreground mb-6" : "flex-grow text-gray-600 mb-6"}>
               {/* You can add more detailed content here */}
               This is the back of the card, where you can add more in-depth
               information, charts, or links.
@@ -75,7 +98,7 @@ export function FlippableCard({ item }: FlippableCardProps) {
             <Button
               onClick={() => setIsFlipped(false)}
               variant="outline"
-              className="mt-auto inline-block"
+              className={ui === "finwise" ? "mt-auto inline-block rounded-full" : "mt-auto inline-block"}
             >
               <ArrowLeft className="mr-2 h-4 w-4" /> Go Back
             </Button>

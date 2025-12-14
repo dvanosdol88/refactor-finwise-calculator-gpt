@@ -11,6 +11,8 @@ import Container from "@/components/layout/Container";
 import Section from "@/components/layout/Section";
 import SectionReveal from "@/components/motion/SectionReveal";
 import { MotionConfig } from "framer-motion";
+import FinwiseCard from "@/components/finwise/FinwiseCard";
+import FinwiseButton from "@/components/finwise/FinwiseButton";
 import {
   Tooltip,
   TooltipContent,
@@ -207,22 +209,21 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="max-w-[420px]">
-                  <SurveySection />
+                  <SurveySection ui="finwise" />
                 </div>
-                <button
+                <FinwiseButton
                   data-testid="button-share"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white/70 px-4 py-2 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-white"
                   onClick={share}
                 >
                   <Share2 className="h-4 w-4" />
                   <span>Share</span>
-                </button>
+                </FinwiseButton>
               </div>
             </div>
 
             {/* Surface grid */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="rounded-3xl bg-card border border-border shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] p-6">
+              <FinwiseCard>
                 <CalculatorControls
                   ui="finwise"
                   portfolioValue={_.portfolioValue}
@@ -235,13 +236,13 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
                   setPortfolioGrowth={_.setPortfolioGrowth}
                   onReset={_.handleReset}
                 />
-              </div>
+              </FinwiseCard>
 
-              <div
+              <FinwiseCard
                 data-testid="chart-container"
-                className="rounded-3xl bg-card border border-border shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] p-6 h-[420px] sm:h-[520px]"
+                className="h-[440px] sm:h-[540px]"
               >
-                <ChartCarousel>
+                <ChartCarousel ui="finwise">
                   <SavingsChart
                     data={_.chartData}
                     firstYearSavings={_.firstYearSavings}
@@ -250,15 +251,17 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
                     portfolioValue={_.portfolioValue}
                     viewMode={_.viewMode}
                     annualFeePercent={_.annualFeePercent}
+                    ui="finwise"
                   />
                   <DonutChart
                     portfolioValue={_.portfolioValue}
                     annualFeePercent={_.annualFeePercent}
                     portfolioGrowth={_.portfolioGrowth}
                     years={_.years}
+                    ui="finwise"
                   />
                 </ChartCarousel>
-              </div>
+              </FinwiseCard>
             </div>
 
             {/* Finwise-style savings callout (keeps existing testid) */}
@@ -272,7 +275,10 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
                         {formatCurrency(_.totalSavings)}
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent className="max-w-md rounded-md shadow-md p-4 z-50 bg-white" sideOffset={5}>
+                    <TooltipContent
+                      className="max-w-md rounded-md shadow-md p-4 z-50 bg-popover text-popover-foreground border border-border"
+                      sideOffset={5}
+                    >
                       <div className="text-sm space-y-3">
                         <div>
                           <p className="font-semibold text-foreground mb-1">Total Savings Calculation</p>
@@ -299,6 +305,7 @@ function CalculatorFinwiseView(_: CalculatorViewProps) {
             annualFeePercent={_.annualFeePercent}
             portfolioGrowth={_.portfolioGrowth}
             years={_.years}
+            ui="finwise"
           />
         </SectionReveal>
       </Section>

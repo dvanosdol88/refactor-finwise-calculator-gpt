@@ -15,6 +15,7 @@ interface CarouselSectionProps {
   annualFeePercent: number;
   portfolioGrowth: number;
   years: number;
+  ui?: "legacy" | "finwise";
 }
 
 export function CarouselSection({
@@ -22,6 +23,7 @@ export function CarouselSection({
   annualFeePercent,
   portfolioGrowth,
   years,
+  ui = "legacy",
 }: CarouselSectionProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
@@ -106,10 +108,16 @@ export function CarouselSection({
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-8 md:py-16 bg-white relative">
-      <div className="container mx-auto px-4">
+    <section className={ui === "finwise" ? "py-8 md:py-16 bg-transparent relative" : "py-8 md:py-16 bg-white relative"}>
+      <div className={ui === "finwise" ? "" : "container mx-auto px-4"}>
         {/* Main Title (spacing reduced) */}
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800">
+        <h2
+          className={
+            ui === "finwise"
+              ? "text-3xl md:text-4xl font-extrabold font-fwheading text-center mb-6 text-foreground"
+              : "text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800"
+          }
+        >
           <span className={selectedIndex === 0 ? "text-primary" : ""}>Upgrade</span>.{' '}
           <span className={selectedIndex === 1 ? "text-primary" : ""}>Improve</span>.{' '}
           <span className={selectedIndex === 2 ? "text-primary" : ""}>Save</span>?
@@ -127,7 +135,7 @@ export function CarouselSection({
                 >
                   {/* Height increased (min-h-[420px]) to allow for Donut Chart */}
                   <div className="min-h-[420px]">
-                    <FlippableCard item={item} />
+                    <FlippableCard item={item} ui={ui} />
                   </div>
                 </div>
               ))}
@@ -142,7 +150,9 @@ export function CarouselSection({
                 onClick={() => scrollTo(index)}
                 className={`h-2 rounded-full transition-all ${selectedIndex === index
                   ? 'w-8 bg-primary' // Active dot
-                  : 'w-2 bg-gray-400 hover:bg-gray-500' // Inactive dot
+                  : ui === "finwise"
+                    ? 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/45'
+                    : 'w-2 bg-gray-400 hover:bg-gray-500' // Inactive dot
                   }`}
                 aria-label={`Go to slide ${index + 1}`}
                 data-testid={`button-carousel-indicator-${index}`}
@@ -156,7 +166,11 @@ export function CarouselSection({
             variant="default"
             onClick={scrollPrev}
             disabled={prevBtnDisabled}
-            className="!absolute hidden md:flex left-4 md:-left-16 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#006044] shadow-lg z-10 h-12 w-12 rounded-full"
+            className={
+              ui === "finwise"
+                ? "!absolute hidden md:flex left-4 md:left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-primary border border-border shadow-lg z-10 h-12 w-12 rounded-full"
+                : "!absolute hidden md:flex left-4 md:-left-16 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#006044] shadow-lg z-10 h-12 w-12 rounded-full"
+            }
             data-testid="button-carousel-prev"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -167,7 +181,11 @@ export function CarouselSection({
             variant="default"
             onClick={scrollNext}
             disabled={nextBtnDisabled}
-            className="!absolute hidden md:flex right-4 md:-right-16 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#006044] shadow-lg z-10 h-12 w-12 rounded-full"
+            className={
+              ui === "finwise"
+                ? "!absolute hidden md:flex right-4 md:right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background text-primary border border-border shadow-lg z-10 h-12 w-12 rounded-full"
+                : "!absolute hidden md:flex right-4 md:-right-16 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-[#006044] shadow-lg z-10 h-12 w-12 rounded-full"
+            }
             data-testid="button-carousel-next"
           >
             <ChevronRight className="h-6 w-6" />

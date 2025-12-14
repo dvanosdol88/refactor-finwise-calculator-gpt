@@ -10,6 +10,7 @@ interface DonutChartProps {
   years: number;
   // We can pass pre-calculated values if we want, or calculate inside.
   // Passing raw inputs allows independence.
+  ui?: "legacy" | "finwise";
 }
 
 export default function DonutChart({
@@ -17,6 +18,7 @@ export default function DonutChart({
   annualFeePercent,
   portfolioGrowth,
   years,
+  ui = "legacy",
 }: DonutChartProps) {
   const annualFeeRate = annualFeePercent / 100;
   const growthRate = portfolioGrowth / 100;
@@ -58,11 +60,59 @@ export default function DonutChart({
     }).format(val);
   };
 
-  console.log('DonutChart Render:', { portfolioValue, annualFeePercent, portfolioGrowth, years, percentFeeFV, grossFV, lostToFees, keptGrowth, totalValue });
+  if (ui === "legacy") {
+    return (
+      <div className="w-full h-full min-h-[300px] flex flex-col items-center justify-center relative bg-white/50 rounded-xl">
+        <h4 className="text-lg font-semibold text-gray-700 mb-2">Where Your Growth Goes</h4>
+
+        {/* Chart Container - Fixed Size for Stability */}
+        <div className="relative w-[300px] h-[300px] flex items-center justify-center">
+          <PieChart key={chartKey} width={300} height={300}>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey="value"
+              isAnimationActive={false}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={(value: number) => formatCurrency(value)}
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            />
+          </PieChart>
+
+          {/* Center Text Overlay */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-sm text-gray-500 font-medium">Total Growth</span>
+            <span className="text-xl font-bold text-gray-900">{formatCurrency(totalValue)}</span>
+          </div>
+        </div>
+
+        {/* Legend / Callouts */}
+        <div className="flex gap-4 mt-2 text-sm z-10">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <span>Lost: <span className="font-bold text-red-500">{formatCurrency(lostToFees)}</span></span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded-full bg-green-500" />
+            <span>Kept: <span className="font-bold text-green-500">{formatCurrency(keptGrowth)}</span></span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-full min-h-[300px] flex flex-col items-center justify-center relative bg-white/50 rounded-xl">
-      <h4 className="text-lg font-semibold text-gray-700 mb-2">Where Your Growth Goes</h4>
+    <div className="w-full h-full min-h-[300px] flex flex-col items-center justify-center relative bg-background/40 rounded-2xl border border-border/60">
+      <h4 className="text-base font-semibold text-foreground mb-2 font-heading">Where Your Growth Goes</h4>
       
       {/* Chart Container - Fixed Size for Stability */}
       <div className="relative w-[300px] h-[300px] flex items-center justify-center">
@@ -78,31 +128,46 @@ export default function DonutChart({
             isAnimationActive={false}
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  ui === "finwise"
+                    ? entry.name === "Lost to Fees"
+                      ? "hsl(var(--destructive))"
+                      : "hsl(var(--primary))"
+                    : entry.color
+                }
+              />
             ))}
           </Pie>
           <Tooltip
             formatter={(value: number) => formatCurrency(value)}
-            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            contentStyle={{
+              borderRadius: '8px',
+              border: '1px solid hsl(var(--border))',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
+              background: 'hsl(var(--popover))',
+              color: 'hsl(var(--popover-foreground))',
+            }}
           />
         </PieChart>
 
         {/* Center Text Overlay */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-sm text-gray-500 font-medium">Total Growth</span>
-          <span className="text-xl font-bold text-gray-900">{formatCurrency(totalValue)}</span>
+          <span className="text-sm text-muted-foreground font-medium">Total Growth</span>
+          <span className="text-xl font-bold text-foreground font-heading">{formatCurrency(totalValue)}</span>
         </div>
       </div>
 
       {/* Legend / Callouts */}
       <div className="flex gap-4 mt-2 text-sm z-10">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <span>Lost: <span className="font-bold text-red-500">{formatCurrency(lostToFees)}</span></span>
+          <div className="w-3 h-3 rounded-full bg-destructive" />
+          <span>Lost: <span className="font-bold text-destructive">{formatCurrency(lostToFees)}</span></span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-          <span>Kept: <span className="font-bold text-green-500">{formatCurrency(keptGrowth)}</span></span>
+          <div className="w-3 h-3 rounded-full bg-primary" />
+          <span>Kept: <span className="font-bold text-primary">{formatCurrency(keptGrowth)}</span></span>
         </div>
       </div>
     </div>

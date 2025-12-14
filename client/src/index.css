@@ -260,6 +260,7 @@
   body {
     @apply antialiased bg-background text-foreground;
     font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
   }
 }
 
@@ -380,6 +381,10 @@
 [data-ui="finwise"] {
   --fw-accent: #006044;
   --fw-hero-background: #F3F3F5;
+  --fw-secondary: #304fff;
+  --fw-chart-current: var(--fw-secondary);
+  --fw-chart-flat: hsl(var(--primary));
+  --fw-chart-savings: hsl(var(--primary));
 
   /* Remap existing design tokens within this subtree */
   --background: 0 0% 100%;
